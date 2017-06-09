@@ -9,6 +9,7 @@ import pygame
 class Block():
     def __init__(self,pos,b_size):
         self.rect = pygame.Rect(pos[0],pos[1],b_size,b_size)
+        self.aabb = (pos[0],pos[1],b_size,b_size)
 
 class Level():
     
@@ -26,8 +27,7 @@ class Level():
             y += b_size
             x = 0
     
-    def render(self,screen,color,b_size):
-        self.gen_level(b_size)        
+    def render(self,screen,color):      
         
         for b in self.blocklist:
             pygame.draw.rect(screen,color,b.rect)

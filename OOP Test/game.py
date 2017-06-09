@@ -4,7 +4,6 @@ Created on Fri Jun 09 07:52:09 2017
 
 @author: GWils
 """
-
 import pygame
 from constants import *
 from player import *
@@ -19,7 +18,7 @@ class Game():
     
     def __init__(self,screen,clock):
         self.screen = screen
-        self.clock = clock
+#        self.clock = clock
         self.running = True
         self.fps = 30
         self.level = Level(level_1)
@@ -29,6 +28,9 @@ class Game():
         self.press_left = False
         self.press_up = False
         self.press_down = False
+        
+        self.clock = pygame.time.Clock()
+        self.frame_duration_ms = 1000/30
         
     def events(self):
         for e in pygame.event.get():
@@ -57,19 +59,19 @@ class Game():
                     
     def render(self):
         self.screen.fill(black)
-        self.level.render(screen,white,b_size)
+        self.level.render(screen,white)
         self.player.render(screen,red)
-        pygame.display.flip()
+        pygame.display.flip()       
         self.clock.tick(self.fps)
         
-    def acc_player(self):
+    def move_player(self):
         if self.press_left == self.press_right:
             self.player.dx = 0
         elif self.press_left == True:
             self.player.dx = -player_vel
         elif self.press_right == True:
             self.player.dx = player_vel
-            
+           
         if self.press_up == self.press_down:
             self.player.dy = 0
         elif self.press_up == True:
@@ -77,12 +79,30 @@ class Game():
         elif self.press_down == True:
             self.player.dy = player_vel
         
+    def collision_detection(self):
+        for wall in self.level.blocklist:
+#            if self.player.rect.colliderect(wall.rect):
+#                print 'collision'
+#                if self.player.dx > 0: 
+#                    print 'collision2'
+#                    self.player.x = wall.rect[0] 
+#                if self.player.dx < 0: 
+#                    self.player.rect.x = wall.rect[0] + b_size
+#                if self.player.dy > 0: 
+#                    self.player.rect.y = wall.rect.top -b_size
+#                if self.player.dy < 0: 
+#                    self.player.rect.y = wall.rect.bottom
+
+       
     def main_loop(self):
+        self.screen.fill(black)
+        self.level.gen_level(b_size)
+        
         while self.running:
             self.events()
-            self.acc_player()
+            self.move_player() 
+            self.collision_detection()
             self.player.move()
-            
             self.render()
         
 g = Game(screen,clock)
