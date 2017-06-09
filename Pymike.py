@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jun 06 13:28:47 2017
-
-@author: GWils
-"""
-
 #! /usr/bin/env python
 
 import os
