@@ -6,11 +6,12 @@ Created on Fri Jun 09 08:49:45 2017
 """
 
 import pygame
+from constants import *
 from objects import *
 
 class Player():
-    def __init__(self,b_size):
-        self.origin = (b_size,b_size)
+    def __init__(self,origin):
+        self.origin = origin
         self.x = self.origin[0]
         self.y = self.origin[1]
         self.size = b_size
@@ -19,7 +20,7 @@ class Player():
     def collision(self,dx,dy,blocklist):
         for wall in blocklist:
             if isinstance(wall,End) and self.rect.colliderect(wall.rect):
-                print 'end'
+                return False
             elif isinstance(wall,Spike) and self.rect.colliderect(wall.rect):
                 self.rect.topleft = (self.origin)
             elif self.rect.colliderect(wall.rect):
@@ -31,13 +32,14 @@ class Player():
                     self.rect.bottom = wall.rect.top
                 if dy < 0: 
                     self.rect.top = wall.rect.bottom 
-                    
+        return True              
     def move(self,dx,dy,blocklist):
         
         self.rect.x += dx
         self.rect.y += dy
 
-        self.collision(dx,dy,blocklist)
+        end = self.collision(dx,dy,blocklist)
+        return end
 
     def render(self,screen,colour):
         pygame.draw.rect(screen,colour,self.rect)

@@ -21,10 +21,10 @@ class Game():
         self.running = True
         self.fps = 60
         
-        self.level = Level(level_1)
-        self.level.gen_level(b_size)
+        self.level_list = level_list
+        self.level = None
         
-        self.player = Player(b_size)
+        self.player = Player((b_size,b_size))
         
         self.press_right = False
         self.press_left = False
@@ -36,6 +36,8 @@ class Game():
     def events(self):
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
+                pygame.quit()
+                quit()
                 self.running = False 
             
             elif e.type == pygame.KEYDOWN:
@@ -66,12 +68,13 @@ class Game():
         self.clock.tick(self.fps)
         
     def move_player(self, blocklist):
+        
         if self.press_left == self.press_right:
-            self.player.move(0,0, blocklist)
+            end = self.player.move(0,0, blocklist)
         elif self.press_left == True:
-            self.player.move(-player_vel,0, blocklist)
+            end = self.player.move(-player_vel,0, blocklist)
         elif self.press_right == True:
-            self.player.move(player_vel,0, blocklist)
+            end = self.player.move(player_vel,0, blocklist)
            
         if self.press_up == self.press_down:
             self.player.move(0,0, blocklist)
@@ -80,15 +83,26 @@ class Game():
         elif self.press_down == True:
             self.player.move(0,player_vel, blocklist)
         
-    def main_loop(self):
-        self.screen.fill(black)
-        self.level.gen_level(b_size)
-        self.player.origin = self.level.origin
+        return end
         
+    def level_loop(self):
         while self.running:
             self.events()
-            self.move_player(self.level.blocklist)
+            self.running = self.move_player(self.level.blocklist)
             self.render()
+       
+    def main_loop(self):
+#        self.screen.fill(black)
+        for level_ in self.level_list:
+            self.screen.fill(black)
+            self.level = Level(level_)
+            self.level.gen_level(b_size)
+            self.player.origin = self.level.origin
+            self.level_loop()
+            self.running = True
+            
+        print 'Thanks For Playing'
+        
         
 g = Game(screen,clock)
 g.main_loop()
