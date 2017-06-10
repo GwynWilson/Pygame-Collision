@@ -18,11 +18,13 @@ class Game():
     
     def __init__(self,screen,clock):
         self.screen = screen
-#        self.clock = clock
         self.running = True
-        self.fps = 30
+        self.fps = 60
+        
         self.level = Level(level_1)
-        self.player = Player(b_size,b_size,b_size)
+        self.level.gen_level(b_size)
+        
+        self.player = Player(b_size)
         
         self.press_right = False
         self.press_left = False
@@ -30,7 +32,6 @@ class Game():
         self.press_down = False
         
         self.clock = pygame.time.Clock()
-        self.frame_duration_ms = 1000/30
         
     def events(self):
         for e in pygame.event.get():
@@ -59,50 +60,34 @@ class Game():
                     
     def render(self):
         self.screen.fill(black)
-        self.level.render(screen,white)
-        self.player.render(screen,red)
+        self.level.render(screen)
+        self.player.render(screen,yellow)
         pygame.display.flip()       
         self.clock.tick(self.fps)
         
-    def move_player(self):
+    def move_player(self, blocklist):
         if self.press_left == self.press_right:
-            self.player.dx = 0
+            self.player.move(0,0, blocklist)
         elif self.press_left == True:
-            self.player.dx = -player_vel
+            self.player.move(-player_vel,0, blocklist)
         elif self.press_right == True:
-            self.player.dx = player_vel
+            self.player.move(player_vel,0, blocklist)
            
         if self.press_up == self.press_down:
-            self.player.dy = 0
+            self.player.move(0,0, blocklist)
         elif self.press_up == True:
-            self.player.dy = -player_vel
+            self.player.move(0,-player_vel, blocklist)
         elif self.press_down == True:
-            self.player.dy = player_vel
+            self.player.move(0,player_vel, blocklist)
         
-    def collision_detection(self):
-        for wall in self.level.blocklist:
-#            if self.player.rect.colliderect(wall.rect):
-#                print 'collision'
-#                if self.player.dx > 0: 
-#                    print 'collision2'
-#                    self.player.x = wall.rect[0] 
-#                if self.player.dx < 0: 
-#                    self.player.rect.x = wall.rect[0] + b_size
-#                if self.player.dy > 0: 
-#                    self.player.rect.y = wall.rect.top -b_size
-#                if self.player.dy < 0: 
-#                    self.player.rect.y = wall.rect.bottom
-
-       
     def main_loop(self):
         self.screen.fill(black)
         self.level.gen_level(b_size)
+        self.player.origin = self.level.origin
         
         while self.running:
             self.events()
-            self.move_player() 
-            self.collision_detection()
-            self.player.move()
+            self.move_player(self.level.blocklist)
             self.render()
         
 g = Game(screen,clock)
