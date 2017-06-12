@@ -32,7 +32,8 @@ class Player():
                     self.rect.bottom = wall.rect.top
                 if dy < 0: 
                     self.rect.top = wall.rect.bottom 
-        return True              
+        return True 
+             
     def move(self,dx,dy,blocklist):
         
         self.rect.x += dx

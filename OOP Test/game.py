@@ -24,6 +24,8 @@ class Game():
         self.level_list = level_list
         self.level = None
         
+        self.text_list = []
+        
         self.player = Player((b_size,b_size))
         
         self.press_right = False
@@ -64,6 +66,8 @@ class Game():
         self.screen.fill(black)
         self.level.render(screen)
         self.player.render(screen,yellow)
+        for text in self.text_list:
+            text.render(self.screen,red)
         pygame.display.flip()       
         self.clock.tick(self.fps)
         
@@ -92,7 +96,6 @@ class Game():
             self.render()
        
     def main_loop(self):
-#        self.screen.fill(black)
         for level_ in self.level_list:
             self.screen.fill(black)
             self.level = Level(level_)
@@ -100,11 +103,37 @@ class Game():
             self.player.origin = self.level.origin
             self.level_loop()
             self.running = True
+    
+    def title_loop(self):
+        title = True
+        self.text_list.append(Text('Welcome',colour=red,pos=(s_width/2,s_height/4),size='large'))
+        self.text_list.append(Text('Press P to play',colour=white,pos=(s_width/2,s_height/2)))
+        self.text_list.append(Text('Press Q to play',colour=white,pos=(s_width/2,s_height/2 +20)))
+        while title:
+            for e in pygame.event.get():
+                if e.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                    self.running = False
+                elif e.type == pygame.KEYDOWN:
+                    if e.key == pygame.K_p:
+                        self.text_list = []
+                        self.main_loop()
+                        title = False
+                    elif e.key == pygame.K_q:
+                        pygame.quit()
+                        quit()
+            
+            self.screen.fill(black)
+            for text in self.text_list:
+                text.render(self.screen)
+            pygame.display.flip()
+            self.clock.tick(5)
             
         print 'Thanks For Playing'
         
         
 g = Game(screen,clock)
-g.main_loop()
+g.title_loop()
 pygame.quit()
 quit()
