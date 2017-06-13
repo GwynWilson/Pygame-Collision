@@ -1,0 +1,14 @@
+Make button
+-Make Block*
+-Handle Events*
+-Do Text*
+Integrate button and text into events and render*
+Make End screen*
+Make Button Centreed by default
+Make intro and end into levels?
+
+Cleanup
+-Move Events to the object?
+
+
+loc repeated for text button

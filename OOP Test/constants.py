@@ -24,6 +24,27 @@ small_font = pygame.font.SysFont(None,25)
 med_font = pygame.font.SysFont(None,50)
 large_font = pygame.font.SysFont(None,80)
 
+level_0 = ['wwwwwwwwwwwwwwwwwwwwwwwwwwwwww',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'w                            w',
+           'wwwwwwwwwwwwwwwwwwwwwwwwwwwwww',]
+
 level_1 = ['wwwwwwwwwwwwwwwwwwwwwwwwwwwwww',
            'wo                           w',
            'w            s               w',
@@ -40,9 +61,9 @@ level_1 = ['wwwwwwwwwwwwwwwwwwwwwwwwwwwwww',
            'w                            w',
            'w    s                  s    w',
            'w                            w',
-           'w            ssssss    ssssssw',
-           'w            s               w',
-           'w            s          E    w',
+           'w            wwwwww    wwwwwww',
+           'w            w               w',
+           'w            w          E    w',
            'wwwwwwwwwwwwwwwwwwwwwwwwwwwwww',]
           
 level_2 = ['wwwwwwwwwwwwwwwwwwwwwwwwwwwwww',

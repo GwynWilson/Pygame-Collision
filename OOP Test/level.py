@@ -8,8 +8,7 @@ import pygame
 from objects import *
 from constants import *
 
-class Level():
-    
+class Level():    
     def __init__(self,string):
         self.level = string
         self.blocklist  = []

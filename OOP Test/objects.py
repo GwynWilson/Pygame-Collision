@@ -44,4 +44,36 @@ class Text():
             text_rect.center = s_width/2 , s_height/2
         screen.blit(text_surface,text_rect)
         
+class Button():
+    def __init__(self,a_colour,i_colour,rect,action=None):
+        self.active_colour = a_colour
+        self.inactive_colour = i_colour
+        self.rect = pygame.Rect(rect)
+        self.rect.center = rect[0],rect[1]
+        self.active = False
+        self.action = action
+        self.text = None
+        
+    def give_text(self,msg,size='small',colour=white):
+        centre = self.rect.center
+        self.text = Text(msg,size=size,pos=centre,colour=colour)
+    
+    def events(self,cursor,click):
+        if self.rect.collidepoint(cursor):
+            self.active = True
+            if click[0] == 1 and self.action != None:
+                return self.action
+        else:
+            self.active = False
+        
+        
+    def render(self,screen):
+        if self.active == True:
+            pygame.draw.rect(screen,self.active_colour,self.rect)
+        else:
+            pygame.draw.rect(screen,self.inactive_colour,self.rect)
+        if self.text != None:
+            self.text.render(screen)
+        
+        
     
