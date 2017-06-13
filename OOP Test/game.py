@@ -51,8 +51,7 @@ class Game():
             elif action == 'quit':
                 pygame.quit()
                 quit()
-        
-    
+
     def events(self):
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
@@ -124,7 +123,7 @@ class Game():
             self.screen.fill(black)
             self.level = Level(level_)
             self.level.gen_level(b_size)
-            self.player.origin = self.level.origin
+            self.player.__init__(self.level.origin)
             self.level_loop()
             self.running = True
         self.end_loop()
@@ -133,13 +132,18 @@ class Game():
         title = True
         self.level = Level(level_0)
         self.level.gen_level(b_size)
-        self.text_list.append(Text('Welcome',colour=red,pos=(s_width/2,s_height/4),size='large'))
+        self.text_list.append(Text('Welcome',colour=red,
+                                   pos=(s_width/2,s_height/4),size='large'))
         
-        play_button = Button(grey,white,((1/4.)*s_width,(3/4.)*s_height,100,50),action='play')
+        play_button = Button(grey,white,((1/4.)*s_width,(3/4.)*s_height,100,50),
+                             action='play')
+                             
         play_button.give_text('Play','small',black)
         self.button_list.append(play_button)
         
-        quit_button = Button(grey,white,((3/4.)*s_width,(3/4.)*s_height,100,50),action='quit')
+        quit_button = Button(grey,white,((3/4.)*s_width,(3/4.)*s_height,100,50),
+                             action='quit')
+                             
         quit_button.give_text('Quit','small',black)
         self.button_list.append(quit_button)
         
@@ -152,9 +156,12 @@ class Game():
         self.player = None
         self.level = Level(level_0)
         self.level.gen_level(b_size)
-        self.text_list.append(Text('Thanks For Playing',colour=red,pos=(s_width/2,s_height/4),size='med'))
+        self.text_list.append(Text('Thanks For Playing',colour=red,
+                                   pos=(s_width/2,s_height/4),size='med'))
         
-        quit_button = Button(grey,white,(s_width/2,s_height/2,100,50),action='quit')
+        quit_button = Button(grey,white,(s_width/2,s_height/2,100,50),
+                             action='quit')
+                             
         quit_button.give_text('Quit','small',black)
         self.button_list.append(quit_button)
         
