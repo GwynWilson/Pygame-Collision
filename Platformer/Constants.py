@@ -21,9 +21,12 @@ width = 480
 height = 600
 FPS = 60
 
+font_name = 'arial'
+
 player_acc = 0.8
 player_fric = 0.15
 player_grav = 0.8
+player_jump = 20
 
 platform_list = [(0,height-40,width,40),
                  (width/2 - 50, height/2 + 100,100,20),\
