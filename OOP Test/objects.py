@@ -5,6 +5,7 @@ Created on Sat Jun 10 11:37:25 2017
 @author: GWils
 """
 import pygame
+vec = pygame.math.Vector2
 from constants import *
 
 class Block():
@@ -13,6 +14,10 @@ class Block():
         self.colour = colour
 
 class End(Block):
+    def __init__(self,pos,b_size,colour):
+        Block.__init__(self,pos,b_size,colour)
+        
+class Wall(Block):
     def __init__(self,pos,b_size,colour):
         Block.__init__(self,pos,b_size,colour)
         
@@ -75,5 +80,49 @@ class Button():
         if self.text != None:
             self.text.render(screen)
         
+class Moving(Block):
+    def __init__(self,pos,b_size,colour,direction='left',vel=5):
+        Block.__init__(self,pos,b_size,colour)
+        self.dir = direction
+        self.speed = vel
+        self.vec = vec(0,0)
+        self.direction()
+        
+    def update(self,blocklist):
+        self.rect.x += self.vec.x
+        self.rect.y += self.vec.y
+        
+        for b in blocklist:
+            if isinstance(b,Block) and not isinstance(b,Moving) \
+                and self.rect.colliderect(b.rect):
+                if self.dir == 'left':
+                    self.dir = 'right'
+                elif self.dir == 'right':
+                    self.dir = 'left'
+                elif self.dir == 'up':
+                    self.dir = 'down'
+                elif self.dir == 'down':
+                    self.dir = 'up'
+                self.direction()
+                
+    def direction(self):
+        if self.dir == 'left':
+            self.vec = vec(-self.speed,0)
+        elif self.dir == 'right':
+            self.vec = vec(self.speed,0)
+        elif self.dir == 'up':
+            self.vec = vec(0,-self.speed)
+        if self.dir == 'down':
+            self.vec = vec(0,+self.speed)
+                
+        
+class Moving_Spike(Moving):
+    def __init__(self,pos,b_size,colour,direction='left',vel=5):
+        Moving.__init__(self,pos,b_size,colour,direction,vel=5)
+    
+class Moving_Wall(Moving):
+    def __init__(self,pos,b_size,colour,direction='left',vel=5):
+        Moving.__init__(self,pos,b_size,colour,direction,vel=5)    
+
         
     

@@ -7,6 +7,20 @@ Make End screen*
 Make Button Centreed by default
 Make intro and end into levels?
 
+Moving Block
+-create class*
+-put in level*
+-make move*
+-handle collision
+--with wall
+--with player
+
+
+Problem with moving object coliding wih itself
+-Make wall object different form moving?
+
+
+
 Cleanup
 -Move Events to the object?
 

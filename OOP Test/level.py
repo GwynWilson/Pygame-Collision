@@ -19,14 +19,39 @@ class Level():
         for row in self.level:
             for col in row:
                 if col == 'w':
-                    self.blocklist.append(Block((x,y),b_size,white))
-                if col == 'E':
+                    self.blocklist.append(Wall((x,y),b_size,white))
+                elif col == 'E':
                     self.blocklist.append(End((x,y),b_size,red))
-                if col == 's':
+                elif col == 's':
                     self.blocklist.append(Spike((x,y),b_size,grey))
-                if col == 'o':
+                elif col == 'o':
                     self.origin = (x,y)
+                elif col == 'l':
+                    self.blocklist.append(Moving_Spike((x,y),b_size,
+                                                       grey,direction='left'))
+                elif col == 'r':
+                    self.blocklist.append(Moving_Spike((x,y),b_size,
+                                                       grey,direction='right'))
+                elif col == 'u':
+                    self.blocklist.append(Moving_Spike((x,y),b_size,
+                                                       grey,direction='up'))
+                elif col == 'd':
+                    self.blocklist.append(Moving_Spike((x,y),b_size,
+                                                       grey,direction='down'))
+                elif col == 'L':
+                    self.blocklist.append(Moving_Wall((x,y),b_size,
+                                                      white,direction='left'))
+                elif col == 'R':
+                    self.blocklist.append(Moving_Wall((x,y),b_size,
+                                                      white,direction='right'))
+                elif col == 'U':
+                    self.blocklist.append(Moving_Wall((x,y),b_size,
+                                                      white,direction='up'))
+                elif col == 'D':
+                    self.blocklist.append(Moving_Wall((x,y),b_size,
+                                                      white,direction='down'))
                 x += b_size
+                
             y += b_size
             x = 0
     

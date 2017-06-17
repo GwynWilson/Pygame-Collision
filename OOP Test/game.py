@@ -79,6 +79,11 @@ class Game():
                 elif e.key == pygame.K_DOWN:
                     self.press_down = False
         self.button_events()
+        
+    def update(self):
+        for b in self.level.blocklist:
+            if isinstance(b,Moving):                
+                b.update(self.level.blocklist)
                     
     def render(self):
         self.screen.fill(black)
@@ -116,6 +121,7 @@ class Game():
         while self.running:
             self.events()
             self.running = self.move_player(self.level.blocklist)
+            self.update()
             self.render()
        
     def main_loop(self):

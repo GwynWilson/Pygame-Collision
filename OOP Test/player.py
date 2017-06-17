@@ -21,9 +21,11 @@ class Player():
         for wall in blocklist:
             if isinstance(wall,End) and self.rect.colliderect(wall.rect):
                 return False
-            elif isinstance(wall,Spike) and self.rect.colliderect(wall.rect):
+            elif (isinstance(wall,Spike) or isinstance(wall,Moving_Spike))\
+                and self.rect.colliderect(wall.rect):
                 self.rect.topleft = (self.origin)
-            elif self.rect.colliderect(wall.rect):
+            elif (isinstance(wall,Wall) or isinstance(wall,Moving_Wall))\
+                and self.rect.colliderect(wall.rect):
                 if dx > 0: 
                     self.rect.right = wall.rect.left
                 if dx < 0: 
