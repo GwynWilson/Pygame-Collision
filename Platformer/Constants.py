@@ -23,6 +23,8 @@ height = 600
 FPS = 60
 hs_file = 'High Score.txt'
 spritesheet_file = 'spritesheet_jumper.png'
+refresh_idle = 350
+refresh_walk = 200
 
 font_name = 'arial'
 
@@ -31,8 +33,9 @@ player_fric = 0.15
 player_grav = 0.8
 player_jump = 20
 
-platform_list = [(0,height-40,width,40),
-                 (width/2 - 50, height/2 + 100,100,20),\
-                 (25,height/2 - 200,150,20),\
-                 (100,height/2 - 100,50,20),\
-                 (375,height/2 + 50,50,20)]
+
+platform_list = [(0,height-60),
+                 (width/2 - 50, height/2 + 100),\
+                 (25,height/2 - 200),\
+                 (100,height/2 - 100),\
+                 (375,height/2 + 50)]

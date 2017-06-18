@@ -40,17 +40,20 @@ class Game():
         self.player = Player(self)
         self.all_sprites.add(self.player)
         for plat in c.platform_list:
-            p = Platform(*plat)
+            p = Platform(self,*plat)
             self.platforms.add(p)
             self.all_sprites.add(p)
             
         self.game_loop()
         
-    def draw_text(self,text,size,colour,x,y):
+    def draw_text(self,text,size,colour,x,y,topleft=False):
         font_ = pg.font.Font(self.font_name,size)
         text_surface = font_.render(text,True,colour)
         text_rect = text_surface.get_rect()
-        text_rect.center = (x,y)
+        if topleft == False:
+            text_rect.center = (x,y)
+        else:
+            text_rect.topleft = (x,y)
         self.screen.blit(text_surface,text_rect)
         
     def update(self):
@@ -62,7 +65,7 @@ class Game():
                 self.player.vel.y = 0
                 
         if self.player.rect.top <= c.height/4:
-            scroll_vel = abs(self.player.vel.y)
+            scroll_vel = max(3,abs(self.player.vel.y))
             self.player.pos.y += scroll_vel
             for plat in self.platforms:
                 plat.rect.y += scroll_vel
@@ -74,11 +77,10 @@ class Game():
             plat_width = random.randrange(30,100)
             y = -random.randrange(30,75)
             x = random.randrange(0,c.width - plat_width)
-            p = Platform(x,y,plat_width,20)
+            p = Platform(self,x,y)
             self.platforms.add(p)
             self.all_sprites.add(p)
-            
-            
+
         if self.player.rect.bottom > c.height:
             for sprite in self.all_sprites:
                 sprite.rect.y -= self.player.vel.y
@@ -87,8 +89,7 @@ class Game():
                     
         if len(self.platforms) < 1:
             self.playing = False
-                
-    
+            
     def events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -98,11 +99,11 @@ class Game():
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     self.player.jump()
-              
+
     def draw(self):
         self.screen.fill(c.blue_light)
         self.all_sprites.draw(self.screen)
-        self.draw_text('Score :{}'.format(str(self.score)),22,c.white,42,12)
+        self.draw_text('Score :{}'.format(str(self.score)),22,c.white,0,0,topleft=True)
         pg.display.update()
         
     def wait_input(self):
