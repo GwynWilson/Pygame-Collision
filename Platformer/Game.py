@@ -9,6 +9,7 @@ import pygame as pg
 import random
 import Constants as c
 from Sprites import *
+from os import path
 
 class Game():
     def __init__(self):
@@ -16,9 +17,21 @@ class Game():
         self.screen = pg.display.set_mode((c.width,c.height))
         self.clock = pg.time.Clock()
         self.font_name = pg.font.match_font(c.font_name)
+        self.load_data()
         
         pg.init()
         pg.mixer.init()
+        
+    def load_data(self):
+        self.dir = path.dirname(__file__)
+        img_dir = path.join(self.dir,'img')
+        with open(path.join(self.dir,c.hs_file),'r+') as f:
+            try:
+                self.highscore = int(f.read())
+            except:
+                self.highscore = 0
+        
+        self.spritesheet = Spritesheet(path.join(img_dir,c.spritesheet_file))
         
     def new_game(self):
         self.score = 0
@@ -37,7 +50,7 @@ class Game():
         font_ = pg.font.Font(self.font_name,size)
         text_surface = font_.render(text,True,colour)
         text_rect = text_surface.get_rect()
-        text_rect.topleft = (x,y)
+        text_rect.center = (x,y)
         self.screen.blit(text_surface,text_rect)
         
     def update(self):
@@ -87,10 +100,20 @@ class Game():
                     self.player.jump()
               
     def draw(self):
-        self.screen.fill(c.black)
+        self.screen.fill(c.blue_light)
         self.all_sprites.draw(self.screen)
-        self.draw_text('Score :{}'.format(str(self.score)),22,c.white,0,0)
+        self.draw_text('Score :{}'.format(str(self.score)),22,c.white,42,12)
         pg.display.update()
+        
+    def wait_input(self):
+        start = False
+        while not start:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    self.running = False
+                    start = True
+                if event.type == pg.KEYDOWN:
+                    start = True
     
     def game_loop(self):
         self.playing = True
@@ -101,10 +124,36 @@ class Game():
             self.draw()
 
     def show_start_screen(self):
-        pass
+        self.screen.fill(c.blue_light)
+        self.draw_text('Title',50,c.white,c.width/2,c.height/4)
+        self.draw_text('Arrows to move, spae to jump',20,c.white,c.width/2,c.height/2)
+        self.draw_text('Press any key to continue',20,c.white,c.width/2,c.height* 3/4)
+        self.draw_text('High Score :{}'.format(self.highscore),
+                       20,c.white,c.width/2,15)
+        pg.display.update()
+        self.wait_input()
+        
+
     
     def show_go_screen(self):
-        pass
+        if not self.running:
+            return
+        self.screen.fill(c.blue_light)
+        self.draw_text('Game Over',50,c.white,c.width/2,c.height/4)
+        self.draw_text('Score :{}'.format(str(self.score)),
+                       20,c.white,c.width/2,c.height/2)
+        self.draw_text('Press any key to continue',20,c.white,c.width/2,c.height* 3/4)
+        if self.score > self.highscore:
+            self.highscore = self.score
+            self.draw_text('NEW HIGH SCORE',20,c.white,c.width/2,c.height/2+40)
+            with open(path.join(self.dir,c.hs_file),'w') as f:
+                f.write(str(self.score))
+        else:
+            self.draw_text('High Score :{}'.format(self.highscore),
+                           20,c.white,c.width/2,c.height/2 + 40)
+        
+        pg.display.update()
+        self.wait_input()
 
 g = Game()
 g.show_start_screen()

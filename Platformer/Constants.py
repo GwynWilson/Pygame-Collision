@@ -14,12 +14,15 @@ green_light = (0,255,0)
 yellow = (200,200,0)
 yellow_light = (255,255,0)
 blue = (0,0,255)
+blue_light = (0,155,255)
 sienna = (160,82,45)
 
 title = 'Generic Platformer'
 width = 480
 height = 600
 FPS = 60
+hs_file = 'High Score.txt'
+spritesheet_file = 'spritesheet_jumper.png'
 
 font_name = 'arial'
 
