@@ -33,17 +33,20 @@ class Game():
         
         self.spritesheet = Spritesheet(path.join(img_dir,c.spritesheet_file))
         
+#        snd_dir = path.join(self.dir,'snd')
+#        self.jump_sound = pg.mixer.Sound(path.join(path.join(self.dir,'snd'),'Jump.mp3'))
+        
+        
     def new_game(self):
         self.score = 0
-        self.all_sprites = pg.sprite.Group()
+        self.all_sprites = pg.sprite.LayeredUpdates()
         self.platforms = pg.sprite.Group()
+        self.powerups = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
+        self.mob_timer = 0
         self.player = Player(self)
-        self.all_sprites.add(self.player)
         for plat in c.platform_list:
-            p = Platform(self,*plat)
-            self.platforms.add(p)
-            self.all_sprites.add(p)
-            
+            p = Platform(self,*plat)            
         self.game_loop()
         
     def draw_text(self,text,size,colour,x,y,topleft=False):
@@ -61,8 +64,13 @@ class Game():
         if self.player.vel.y > 0:
             hits = pg.sprite.spritecollide(self.player,self.platforms,False)
             if hits:
-                self.player.pos.y = hits[0].rect.top + 1
-                self.player.vel.y = 0
+                lowest = max(hits,key=lambda x: x.rect.y)
+                if self.player.pos.x < lowest.rect.right + 5 and \
+                    self.player.pos.x > lowest.rect.left - 5:
+                    if self.player.pos.y <= lowest.rect.centery:
+                        self.player.pos.y = lowest.rect.top + 1
+                        self.player.vel.y = 0
+                        self.player.jumping = False
                 
         if self.player.rect.top <= c.height/4:
             scroll_vel = max(3,abs(self.player.vel.y))
@@ -73,19 +81,33 @@ class Game():
                     self.score += 10
                     plat.kill()
                     
+            for mob in self.mobs:
+                mob.rect.y += scroll_vel
+                if mob.rect.top > c.height:
+                    mob.kill()
+                    
         while len(self.platforms) < 6:
             plat_width = random.randrange(30,100)
             y = -random.randrange(30,75)
             x = random.randrange(0,c.width - plat_width)
             p = Platform(self,x,y)
-            self.platforms.add(p)
-            self.all_sprites.add(p)
 
+        pow_hits = pg.sprite.spritecollide(self.player,self.powerups,True)
+        for power in pow_hits:
+            if power.type == 'boost':
+                self.player.vel.y = -c.boost_power
+                self.player.jumping = False
+            
         if self.player.rect.bottom > c.height:
             for sprite in self.all_sprites:
                 sprite.rect.y -= self.player.vel.y
                 if sprite.rect.top < 0:
                     sprite.kill()
+                    
+        now = pg.time.get_ticks()
+        if now - self.mob_timer > c.mob_freq + random.choice([-1000,-500,0,500,1000]):
+            self.mob_timer = now
+            Mob(self)
                     
         if len(self.platforms) < 1:
             self.playing = False
@@ -99,10 +121,13 @@ class Game():
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     self.player.jump()
-
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_SPACE:
+                    self.player.jump_cut()
     def draw(self):
         self.screen.fill(c.blue_light)
         self.all_sprites.draw(self.screen)
+        self.screen.blit(self.player.image,self.player.rect)
         self.draw_text('Score :{}'.format(str(self.score)),22,c.white,0,0,topleft=True)
         pg.display.update()
         

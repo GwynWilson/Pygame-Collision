@@ -28,6 +28,15 @@ refresh_walk = 200
 
 font_name = 'arial'
 
+boost_power = 40
+power_spawn = 7
+mob_freq = 5000
+
+player_layer = 2
+plat_layer = 1
+pow_layer = 1
+mob_layer = 2
+
 player_acc = 0.8
 player_fric = 0.15
 player_grav = 0.8
