@@ -18,6 +18,7 @@ class Spritesheet():
 class Player(pg.sprite.Sprite):
     def __init__(self,game):
         self.groups = game.all_sprites
+        self._layer = c.player_layer
         pg.sprite.Sprite.__init__(self,self.groups)
         self.game = game
         self.load_images()
@@ -26,6 +27,7 @@ class Player(pg.sprite.Sprite):
         
         self.walking = False
         self.jumping = False
+        self.hurt = False
         self.current_frame = 0
         self.last_update = 0
         
@@ -52,6 +54,8 @@ class Player(pg.sprite.Sprite):
         self.walk_frames_l = [pg.transform.flip(x,True,False) for x in self.walk_frames_r]
         self.jump_frame = self.game.spritesheet.get_image(382,763,150,181)
         self.jump_frame.set_colorkey(c.black)
+        self.hurt_image = self.game.spritesheet.get_image(382,946,150,174)
+        self.hurt_image.set_colorkey(c.black)
          
     def jump(self):
         #Could be moved into the game to avoid referancing game upon init
@@ -75,9 +79,6 @@ class Player(pg.sprite.Sprite):
             self.last_update = now
             self.current_frame = (self.current_frame + 1) % len(list_)
             self.image = list_[self.current_frame]
-            bot = self.rect.bottom
-            self.rect = self.image.get_rect()
-            self.rect.bottom = bot
     
     def animate(self):
         now = pg.time.get_ticks() 
@@ -92,9 +93,14 @@ class Player(pg.sprite.Sprite):
                     self.animate_frame(self.walk_frames_l,now,c.refresh_walk)
         elif self.jumping:
             self.image = self.jump_frame
-            bot = self.rect.bottom
-            self.rect = self.image.get_rect()
-            self.rect.bottom = bot
+        if self.hurt:
+            self.image = self.hurt_image
+            
+        bot = self.rect.bottom
+        self.rect = self.image.get_rect()
+        self.rect.bottom = bot
+        
+        self.mask = pg.mask.from_surface(self.image)    
             
     def update(self):
         self.animate()
@@ -126,6 +132,7 @@ class Player(pg.sprite.Sprite):
 class Platform(pg.sprite.Sprite):
     def __init__(self,game,x,y):
         self.groups = game.all_sprites, game.platforms
+        self._layer = c.plat_layer
         pg.sprite.Sprite.__init__(self,self.groups)
         self.game = game
         images = [self.game.spritesheet.get_image(0,288,380,94),
@@ -142,6 +149,7 @@ class Platform(pg.sprite.Sprite):
 class Power(pg.sprite.Sprite):
     def __init__(self,game,plat):
         self.groups = game.all_sprites, game.powerups
+        self._layer = c.pow_layer
         pg.sprite.Sprite.__init__(self,self.groups)
         self.game = game
         self.plat = plat
@@ -162,6 +170,7 @@ class Power(pg.sprite.Sprite):
 class Mob(pg.sprite.Sprite):
     def __init__(self,game):
         self.groups = game.all_sprites, game.mobs
+        self._layer = c.mob_layer
         pg.sprite.Sprite.__init__(self,self.groups)
         self.game = game
         self.image_up = self.game.spritesheet.get_image(566,510,122,139)
@@ -192,4 +201,24 @@ class Mob(pg.sprite.Sprite):
         self.rect.center = center
         self.rect.y += self.vy
         if self.rect.left > c.width + 50 or self.rect.right < -50:
+            self.kill()
+        self.mask = pg.mask.from_surface(self.image)   
+        
+class Cloud(pg.sprite.Sprite):
+    def __init__(self,game):
+        self.groups = game.all_sprites, game.clouds
+        self._layer = c.cloud_layer
+        pg.sprite.Sprite.__init__(self,self.groups)
+        self.game = game
+        self.image = choice(self.game.cloud_images)
+        self.image.set_colorkey(c.black)
+        self.rect = self.image.get_rect()
+        scale = randrange(50,101)/100.
+        self.image = pg.transform.scale(self.image,(int(self.rect.width*scale),
+                                                   int(self.rect.height*scale)))
+        self.rect.x = randrange(0,c.width-self.rect.width)
+        self.rect.y = randrange(-500,-50)
+        
+    def update(self):
+        if self.rect.top > c.height*2:
             self.kill()

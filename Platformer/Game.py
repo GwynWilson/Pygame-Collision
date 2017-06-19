@@ -8,6 +8,7 @@ Created on Thu Jun 15 15:49:52 2017
 import pygame as pg
 import random
 import Constants as c
+from Collision import *
 from Sprites import *
 from os import path
 
@@ -18,6 +19,7 @@ class Game():
         self.clock = pg.time.Clock()
         self.font_name = pg.font.match_font(c.font_name)
         self.load_data()
+        self.collide = Collide(self)
         
         pg.init()
         pg.mixer.init()
@@ -33,20 +35,30 @@ class Game():
         
         self.spritesheet = Spritesheet(path.join(img_dir,c.spritesheet_file))
         
+        self.cloud_images = []
+        for i in range(1,4):
+            img = pg.image.load(path.join(img_dir,'cloud{}.png'.format(i))).convert()
+            self.cloud_images.append(img)
 #        snd_dir = path.join(self.dir,'snd')
 #        self.jump_sound = pg.mixer.Sound(path.join(path.join(self.dir,'snd'),'Jump.mp3'))
-        
-        
+         
     def new_game(self):
         self.score = 0
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.platforms = pg.sprite.Group()
         self.powerups = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
+        self.clouds = pg.sprite.Group()
         self.mob_timer = 0
         self.player = Player(self)
         for plat in c.platform_list:
-            p = Platform(self,*plat)            
+            p = Platform(self,*plat)
+        
+        for i in range(5):
+            cl = Cloud(self)
+            cl.rect.y += 500
+            
+        self.collide.plat_collide = True
         self.game_loop()
         
     def draw_text(self,text,size,colour,x,y,topleft=False):
@@ -61,26 +73,26 @@ class Game():
         
     def update(self):
         self.all_sprites.update()
-        if self.player.vel.y > 0:
-            hits = pg.sprite.spritecollide(self.player,self.platforms,False)
-            if hits:
-                lowest = max(hits,key=lambda x: x.rect.y)
-                if self.player.pos.x < lowest.rect.right + 5 and \
-                    self.player.pos.x > lowest.rect.left - 5:
-                    if self.player.pos.y <= lowest.rect.centery:
-                        self.player.pos.y = lowest.rect.top + 1
-                        self.player.vel.y = 0
-                        self.player.jumping = False
-                
+        
+        self.collide.mob_collision()        
+        self.collide.platform_collision()   
+        self.collide.pow_collision()
+        
         if self.player.rect.top <= c.height/4:
+            if random.randrange(100) < 10:
+                Cloud(self)
             scroll_vel = max(3,abs(self.player.vel.y))
             self.player.pos.y += scroll_vel
+            
+            for cloud in self.clouds:
+                cloud.rect.y += (scroll_vel // 2)
+                if cloud.rect.top > c.height:
+                    cloud.kill()
             for plat in self.platforms:
                 plat.rect.y += scroll_vel
                 if plat.rect.top > c.height:
                     self.score += 10
-                    plat.kill()
-                    
+                    plat.kill()       
             for mob in self.mobs:
                 mob.rect.y += scroll_vel
                 if mob.rect.top > c.height:
@@ -92,17 +104,11 @@ class Game():
             x = random.randrange(0,c.width - plat_width)
             p = Platform(self,x,y)
 
-        pow_hits = pg.sprite.spritecollide(self.player,self.powerups,True)
-        for power in pow_hits:
-            if power.type == 'boost':
-                self.player.vel.y = -c.boost_power
-                self.player.jumping = False
-            
         if self.player.rect.bottom > c.height:
             for sprite in self.all_sprites:
                 sprite.rect.y -= self.player.vel.y
                 if sprite.rect.top < 0:
-                    sprite.kill()
+                    sprite.kill()  
                     
         now = pg.time.get_ticks()
         if now - self.mob_timer > c.mob_freq + random.choice([-1000,-500,0,500,1000]):
@@ -111,7 +117,7 @@ class Game():
                     
         if len(self.platforms) < 1:
             self.playing = False
-            
+                     
     def events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -127,7 +133,6 @@ class Game():
     def draw(self):
         self.screen.fill(c.blue_light)
         self.all_sprites.draw(self.screen)
-        self.screen.blit(self.player.image,self.player.rect)
         self.draw_text('Score :{}'.format(str(self.score)),22,c.white,0,0,topleft=True)
         pg.display.update()
         

@@ -36,6 +36,7 @@ player_layer = 2
 plat_layer = 1
 pow_layer = 1
 mob_layer = 2
+cloud_layer = 0
 
 player_acc = 0.8
 player_fric = 0.15
